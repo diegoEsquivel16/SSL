@@ -148,3 +148,50 @@ la misma fue completado con "información basura"
 - Luego se corrió el mismo y mostro el siguiente mensaje por pantalla: 
     > La respuesta es 42
 - El programa anda porque se agrega automaticamente la biblioteca _'stdio.h'_, de esta manera se puede vincular a la función _'printf'_ de manera correcta.
+
+### - 6 Compilación Separada: Contratos y Módulos 
+##### Comando ejecutado
+- __>gcc hello8.c studio1.c -o hello8__
+- __>hello8__
+
+##### Resultado
+- Se generó el ejecutabel hello8 sin errores, pero con los siguientes warnings:
+    > hello8.c: In function ‘main’:
+    > hello8.c:3:2: warning: implicit declaration of function ‘prontf’ [-Wimplicit-function-declaration]
+    > 3 |  prontf("La respuesta es %d\n", i);
+    >   |  ^~~~~~
+    > studio1.c: In function ‘prontf’:
+    > studio1.c:2:2: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    > 2 |  printf("La respuesta es %d\n", i);
+    >   |  ^~~~~~
+    > studio1.c:2:2: warning: incompatible implicit declaration of built-in function ‘printf’
+    > studio1.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+    >   +++ |+#include <stdio.h>
+    >     1 | void prontf(const char* s, int i){
+- Lo que indican es que hay funciones declaradas de manera implícita tanto en 'hello8.c' como en 'studio1.c'
+- Al ejecutar el programa se muestra correctamente el mensaje: 
+    > La respuesta es 42
+- El programa funciona correctamente porque se compilaron ambos archivos de manera conjunta haciendo posible que se encuentre una implementación de la función 'prontf' además de la inclusión automática de la biblioteca 'stdio.h'
+- Si se eliminan argumentos en la invocación a 'prontf' ocurre que se utiliza igualmente la implementación de 'studio1.c' y usando valores que desconocemos o "información basura"
+- Si se llaman con argumentos de más se terminan ignorando los mismos y la función responde igualmente de manera correcta (no entiendo porqué)
+
+- Cuando compilamos la version incluyendo el contrato de 'studio.h' lo que logramos es que el compilador se asegura que la función 'prontf' sea invocada con los argumentos declarados en el contrato. En caso de que se llamen con mas o menos argumentos no se genera ningún ejecutable y se muestra por pantalla el siguiente error de compilación:
+- Argumentos de más: 
+    > hello9.c: In function ‘main’:
+    > hello9.c:5:2: error: too many arguments to function ‘prontf’
+    >    5 |  prontf("La respuesta es %d\n", i, 12312);
+    >      |  ^~~~~~
+    > In file included from hello9.c:1:
+    > studio.h:4:6: note: declared here
+    >     4 | void prontf(const char*, int);
+    >       |      ^~~~~~
+- Argumentos de menos:
+    > hello9.c: In function ‘main’:
+    > hello9.c:5:2: error: too few arguments to function ‘prontf’
+    >     5 |  prontf("La respuesta es %d\n");
+    >       |  ^~~~~~
+    > In file included from hello9.c:1:
+    > studio.h:4:6: note: declared here
+    >     4 | void prontf(const char*, int);
+    >       |      ^~~~~~ 
+
